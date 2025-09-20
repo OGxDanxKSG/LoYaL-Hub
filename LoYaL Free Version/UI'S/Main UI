@@ -1,1 +1,78 @@
+-- LocalScript: StarterPlayerScripts/EleriumUIExample.lua
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local player = Players.LocalPlayer
 
+-- Require the custom ModuleScript
+local Elerium = require(ReplicatedStorage:WaitForChild("EleriumUI"))
+
+-- Create the UI window
+local ui = Elerium.new({
+    Title = "Elerium Example",
+    Parent = player:WaitForChild("PlayerGui")
+})
+
+-- Create tabs
+ui:CreateTab("Main")
+ui:CreateTab("Settings")
+ui.Pages.Main.Frame.Visible = true
+
+-- Add controls to Main tab
+ui:AddButton("Main", {
+    Text = "Click Me",
+    Callback = function()
+        ui:Notify("Button clicked!")
+    end
+})
+
+ui:AddToggle("Main", {
+    Text = "Enable Feature",
+    Default = false,
+    Callback = function(state)
+        ui:Notify("Feature is now " .. tostring(state))
+    end
+})
+
+ui:AddSlider("Main", {
+    Text = "Volume",
+    Min = 0,
+    Max = 100,
+    Default = 50,
+    Callback = function(value)
+        ui:Notify("Volume set to " .. math.floor(value))
+    end
+})
+
+-- Add controls to Settings tab
+ui:AddDropdown("Settings", {
+    Text = "Graphics Quality",
+    Items = {"Low", "Medium", "High"},
+    Default = "Medium",
+    Callback = function(choice)
+        ui:Notify("Quality -> " .. choice)
+    end
+})
+
+ui:AddKeybind("Settings", {
+    Text = "Toggle UI",
+    Default = Enum.KeyCode.RightShift,
+    Callback = function(key)
+        ui:Notify("Toggle bound to " .. key.Name)
+    end
+})
+
+ui:AddButton("Settings", {
+    Text = "Close UI",
+    Callback = function()
+        ui.Gui.Enabled = false
+    end
+})
+
+-- Allow toggling the whole UI with the chosen keybind
+UIS.InputBegan:Connect(function(input, typing)
+    if typing then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        ui.Gui.Enabled = not ui.Gui.Enabled
+    end
+end)
